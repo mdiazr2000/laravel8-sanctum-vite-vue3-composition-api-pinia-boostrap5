@@ -9,7 +9,7 @@
       <div v-if="props.errors.message" style="color: red">
         {{ props.errors.message }}
       </div>
-      <div v-for="(index, error) in errorList" :key="index">
+      <div v-for="(error, index) in errorList" :key="index">
         {{ error }}
       </div>
     </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import {computed} from "vue";
 
 const props = defineProps({
   errors: {
@@ -26,26 +26,19 @@ const props = defineProps({
   },
 });
 
-let errorsParse = ref([]);
-
-const buildErrorList = () => {
+const errorList = computed(() => {
+  let tempList = [];
   if (props.errors.details !== undefined) {
     let propertyList = Object.getOwnPropertyNames(props.errors.details);
     if (propertyList && propertyList.length) {
-      errorsParse.value =
-        propertyList &&
-        propertyList.map((item) => {
-          return item + " : " + props.errors.details[item].join(",");
-        });
+          propertyList &&
+          propertyList.forEach((item) => {
+            const itemAdd = item + " : " + props.errors.details[item].join(",");
+            tempList.push(itemAdd)
+          });
     }
-  } else {
-    errorsParse.value = [];
   }
-  return errorsParse;
-};
-
-const errorList = computed(() => {
-  return buildErrorList();
+  return tempList;
 });
 </script>
 
